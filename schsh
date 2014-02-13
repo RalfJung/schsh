@@ -58,4 +58,4 @@ else:
 	logquit("Invalid arguments for schsh: "+str(sys.argv))
 
 assert len(run) > 0
-os.execl("/usr/bin/schroot", "/usr/bin/schroot", "-c", "user-"+get_username(), "-d", "/data", "--", *run)
+os.execl("/usr/bin/schroot", "/usr/bin/schroot", "-c", "schsh-"+get_username(), "-d", "/data", "--", *run)

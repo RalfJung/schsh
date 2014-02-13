@@ -23,15 +23,15 @@ def setup(name):
 	userpw = pwd.getpwnam(name)
 	
 	# schroot configuration
-	with open("/etc/schroot/chroot.d/user-"+name, "w") as f:
-		print >>f, """[user-{0}]
+	with open("/etc/schroot/chroot.d/schsh-"+name, "w") as f:
+		print >>f, """[schsh-{0}]
 type=directory
 directory={1}
 users={0}
-profile=user
-setup.fstab=user/user-{0}.fstab
+profile=schsh
+setup.fstab=schsh/{0}.fstab
 """.format(name, chroot)
-	with open("/etc/schroot/user/user-"+name+".fstab", "w") as f:
+	with open("/etc/schroot/schsh/"+name+".fstab", "w") as f:
 		print >>f, """# <file system> <mount point>   <type>  <options>       <dump>  <pass>
 /bin          \t/bin          \tnone  \trw,bind       \t0     \t0
 /lib          \t/lib          \tnone  \trw,bind       \t0     \t0
