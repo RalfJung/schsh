@@ -1,0 +1,74 @@
+#!/usr/bin/python
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+# Configuration
+schsh = "/usr/local/bin/schsh"
+group = "schsh"
+chroots = "/var/lib/schsh"
+
+# END of Configuration
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+# DO NOT TOUCH ANYTHING BELOW THIS LINE
+
+import os, sys, subprocess, pwd, grp
+
+if os.getuid() != 0:
+	print "Run this a root, please."
+	sys.exit(1)
+
+
+def setup(name):
+	chroot = os.path.join(chroots, name)
+	if os.path.exists(chroot):
+		raise Exception(chroot+" already exists, please remove it first")
+	userpw = pwd.getpwnam(name)
+	
+	# schroot configuration
+	with open("/etc/schroot/chroot.d/user-"+name, "w") as f:
+		print >>f, """[user-{0}]
+type=directory
+directory={1}
+users={0}
+profile=user
+setup.fstab=user/user-{0}.fstab
+""".format(name, chroot)
+	with open("/etc/schroot/user/user-"+name+".fstab", "w") as f:
+		print >>f, """# <file system> <mount point>   <type>  <options>       <dump>  <pass>
+/bin          \t/bin          \tnone  \trw,bind       \t0     \t0
+/lib          \t/lib          \tnone  \trw,bind       \t0     \t0
+/usr/bin      \t/usr/bin      \tnone  \trw,bind       \t0     \t0
+/usr/lib      \t/usr/lib      \tnone  \trw,bind       \t0     \t0
+/home/{0}/data\t/data         \tnone  \trw,bind       \t0     \t0
+""".replace(' ', '').format(name) # need to remove spaces so schroot does not complain
+	
+	# setup the schroot directory
+	os.mkdir(chroot)
+	for folder in ["etc", "dev", "bin", "usr", "data"]:
+		os.mkdir(os.path.join(chroot, folder))
+	
+	# setup /etc/passwd and /etc/group
+	with open(os.path.join(chroot, "etc", "passwd"), "w") as f:
+		print >>f, "root:x:0:0:root:/root:/bin/bash"
+		print >>f, "{0}:x:{1}:{2}:,,,:/data:/bin/false".format(name, userpw.pw_uid, userpw.pw_gid)
+	with open(os.path.join(chroot, "etc", "group"), "w") as f:
+		print >>f, "root:x:0:"
+		usergrp = grp.getgrgid(userpw.pw_gid)
+		print >>f, "{0}:x:{1}:".format(usergrp.gr_name, usergrp.gr_gid)
+		if group:
+			groupgrp = grp.getgrnam(group)
+			assert usergrp.gr_gid != groupgrp.gr_gid
+			print >>f, "{0}:x:{1}:{2}".format(groupgrp.gr_name, groupgrp.gr_gid, name)
+	
+	# user configuration
+	if userpw.pw_shell != schsh:
+		subprocess.check_output(["usermod", "--shell", schsh, name])
+	if group:
+		subprocess.check_output(["adduser", name, "schsh"])
+	
+	# done!
+
+if len(sys.argv) <= 1:
+	print "Usage: %s <usernames>" % sys.argv[0]
+else:
+	for name in sys.argv[1:]:
+		print "Setting up",name
+		setup(name)

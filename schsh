@@ -1,0 +1,61 @@
+#!/usr/bin/python
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+# Configuration
+shell = None # set to "/bin/bash" or similar to allow shell access
+allowCommands = ["scp", "rsync", "/usr/lib/openssh/sftp-server"]
+commandPaths = ["/usr/bin", "/bin"]
+
+# END of Configuration
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+# DO NOT TOUCH ANYTHING BELOW THIS LINE
+
+import logging, logging.handlers
+import os, sys, shlex, pwd
+
+logger = logging.getLogger("schsh")
+logger.setLevel(logging.INFO)
+logger.addHandler(logging.handlers.SysLogHandler(address = '/dev/log',
+						facility = logging.handlers.SysLogHandler.LOG_AUTH))
+
+def get_username():
+    return pwd.getpwuid(os.getuid()).pw_name
+
+def log(msg, lvl = logging.INFO):
+	logger.log(lvl, "%s[%d]: <%s> %s" % ("schsh", os.getpid(), get_username(), msg))
+
+def logquit(msg):
+	log(msg, logging.ERROR)
+	sys.exit(1)
+
+def addPath(prog):
+	if prog.startswith("/"):
+		return prog
+	# look for it in the paths
+	for path in commandPaths:
+		fullprog = os.path.join(path, prog)
+		if os.path.exists(fullprog):
+			return fullprog
+	return None
+
+# parse arguments
+run = []
+if len(sys.argv) == 1:
+	if shell is None:
+		print "No shell for you!"
+		logquit("Shell access not allowed")
+	else:
+		run = [shell]
+elif len(sys.argv) == 3 and sys.argv[1] == "-c":
+	# check if the command is allowed, and add path
+	run = shlex.split(sys.argv[2])
+	if len(run) > 0 and run[0] in allowCommands:
+		run[0] = addPath(run[0])
+		log("Running '"+str(run)+"'")
+	else:
+		print "You are not allowed to run this command."
+		logquit("Attempt to run invalid command '"+sys.argv[2]+"'")
+else:
+	logquit("Invalid arguments for schsh: "+str(sys.argv))
+
+assert len(run) > 0
+os.execl("/usr/bin/schroot", "/usr/bin/schroot", "-c", "user-"+get_username(), "-d", "/data", "--", *run)
