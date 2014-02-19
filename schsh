@@ -7,6 +7,7 @@ def allowSCP(run):
 	if len(run) != 3: return False
 	if run[0] != "scp": return False
 	if run[1] not in ("-f", "-t"): return False
+	if run[2].startswith('-'): return False
 	return True
 
 def allowRSync(run):
