@@ -2,7 +2,24 @@
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # Configuration
 shell = None # set to "/bin/bash" or similar to allow shell access
-allowCommands = ["scp", "rsync", "/usr/lib/openssh/sftp-server"]
+
+def allowSCP(run):
+	if len(run) != 3: return False
+	if run[0] != "scp": return False
+	if run[1] not in ("-f", "-t"): return False
+	return True
+
+def allowRSync(run):
+	if len(run) < 3: return False
+	if run[0] != "rsync": return False
+	if run[1] != "--server": return False
+	return True
+
+def allowSFTP(run):
+	if len(run) != 1: return False
+	return run[0] == "/usr/lib/openssh/sftp-server"
+
+allowCommands = [allowSCP, allowRSync, allowSFTP]
 commandPaths = ["/usr/bin", "/bin"]
 
 # END of Configuration
@@ -27,6 +44,12 @@ def logquit(msg):
 	log(msg, logging.ERROR)
 	sys.exit(1)
 
+def commandAllowed(run):
+	for allowed in allowCommands:
+		if allowed(run):
+			return True
+	return False
+
 def addPath(prog):
 	if prog.startswith("/"):
 		return prog
@@ -48,7 +71,7 @@ if len(sys.argv) == 1:
 elif len(sys.argv) == 3 and sys.argv[1] == "-c":
 	# check if the command is allowed, and add path
 	run = shlex.split(sys.argv[2])
-	if len(run) > 0 and run[0] in allowCommands:
+	if commandAllowed(run):
 		run[0] = addPath(run[0])
 		log("Running '"+str(run)+"'")
 	else:
