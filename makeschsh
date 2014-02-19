@@ -32,13 +32,14 @@ profile=schsh
 setup.fstab=schsh/{0}.fstab
 """.format(name, chroot)
 	with open("/etc/schroot/schsh/"+name+".fstab", "w") as f:
-		print >>f, """# <file system> <mount point>   <type>  <options>       <dump>  <pass>
-/bin          \t/bin          \tnone  \trw,bind       \t0     \t0
-/lib          \t/lib          \tnone  \trw,bind       \t0     \t0
-/usr/bin      \t/usr/bin      \tnone  \trw,bind       \t0     \t0
-/usr/lib      \t/usr/lib      \tnone  \trw,bind       \t0     \t0
-/home/{0}/data\t/data         \tnone  \trw,bind       \t0     \t0
-""".replace(' ', '').format(name) # need to remove spaces so schroot does not complain
+		# no spaces, schroot does not like them
+		print >>f, "# <file system> <mount point>   <type>  <options>       <dump>  <pass>"
+		# system folders
+		for folder in ("/bin", "/lib", "/lib64", "/usr/bin", "/usr/lib", "/usr/lib64"):
+			if os.path.exists(folder):
+				print >>f, "{0}\t{0}\tnone\trw,bind\t0\t0".format(folder)
+		# user folder
+		print >>f, "/home/{0}/data\t/data\tnone\trw,bind\t0\t0".format(name)
 	
 	# setup the schroot directory
 	os.mkdir(chroot)
