@@ -1,7 +1,10 @@
 #!/usr/bin/python3
+import logging, logging.handlers
+import os, sys, shlex, pwd
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # Configuration
 shell = None # set to "/bin/bash" or similar to allow shell access
+rrsync = "/usr/local/bin/schsh-rrsync" # path to the restricted rsync script - if available, it will be used to further restrict rsync access
 
 def allowSCP(run, runstr):
 	if len(run) != 3: return False
@@ -15,7 +18,11 @@ def allowRSync(run, runstr):
 	if len(run) < 3: return False
 	if run[0] != "rsync": return False
 	if run[1] != "--server": return False
-	run[0] = "/usr/bin/rsync"
+	if rrsync is None:
+		# rrsync is not available, let's hope this is enough protection
+		run[0] = "/usr/bin/rsync"
+		return True
+	run[:] = [rrsync, "/", runstr] # allow access to the entire chroot
 	return True
 
 def allowSFTP(run, runstr):
@@ -27,8 +34,6 @@ allowCommands = [allowSCP, allowRSync, allowSFTP]
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # DO NOT TOUCH ANYTHING BELOW THIS LINE
 
-import logging, logging.handlers
-import os, sys, shlex, pwd
 
 logger = logging.getLogger("schsh")
 logger.setLevel(logging.INFO)

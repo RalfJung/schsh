@@ -3,16 +3,16 @@
 # Purpose: Restricts rsync to subdirectory declared in .ssh/authorized_keys
 # Author: Joe Smith <js-cgi@inwap.com> 30-Sep-2004
 # Modified by: Wayne Davison <wayned@samba.org>
+# Modified by: Ralf Jung <post@ralfj.de>
 use strict;
 
-use Socket;
+# use Socket;
 use Cwd 'abs_path';
 use File::Glob ':glob';
 
 # You may configure these values to your liking.  See also the section
 # of options if you want to disable any options that rsync accepts.
 use constant RSYNC => '/usr/bin/rsync';
-use constant LOGFILE => 'rrsync.log';
 
 my $Usage = <<EOM;
 Use 'command="$0 [-ro] SUBDIR"'
@@ -25,18 +25,13 @@ die "$0: No subdirectory specified\n$Usage" unless defined $subdir;
 $subdir = abs_path($subdir);
 die "$0: Restricted directory does not exist!\n" if $subdir ne '/' && !-d $subdir;
 
-# The client uses "rsync -av -e ssh src/ server:dir/", and sshd on the server
-# executes this program when .ssh/authorized_keys has 'command="..."'.
-# For example:
-# command="rrsync logs/client" ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAIEAzGhEeNlPr...
-# command="rrsync -ro results" ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAIEAmkHG1WCjC...
-#
-# Format of the environment variables set by sshd:
-# SSH_ORIGINAL_COMMAND=rsync --server          -vlogDtpr --partial . ARG # push
-# SSH_ORIGINAL_COMMAND=rsync --server --sender -vlogDtpr --partial . ARGS # pull
-# SSH_CONNECTION=client_addr client_port server_port
+# The client uses "rsync -av -e ssh src/ server:dir/", and schsh makes the entire rsync call
+# the third argument to rrsnc: rrsync (-ro)? SUBDIR COMMAND
+# Format of the COMMAND:
+# COMMAND=rsync --server          -vlogDtpr --partial . ARG # push
+# COMMAND=rsync --server --sender -vlogDtpr --partial . ARGS # pull
 
-my $command = $ENV{SSH_ORIGINAL_COMMAND};
+my $command = shift;
 die "$0: Not invoked via sshd\n$Usage"	unless defined $command;
 die "$0: SSH_ORIGINAL_COMMAND='$command' is not rsync\n" unless $command =~ s/^rsync\s+//;
 die "$0: --server option is not first\n" unless $command =~ /^--server\s/;
@@ -129,10 +124,6 @@ if ($short_disabled ne '') {
 $short_no_arg = "[$short_no_arg]" if length($short_no_arg) > 1;
 $short_with_num = "[$short_with_num]" if length($short_with_num) > 1;
 
-my $write_log = -f LOGFILE && open(LOG, '>>', LOGFILE);
-
-chdir($subdir) or die "$0: Unable to chdir to restricted dir: $!\n";
-
 my(@opts, @args);
 my $in_options = 1;
 my $last_opt = '';
@@ -190,16 +181,6 @@ while ($command =~ /((?:[^\s\\]+|\\.[^\s\\]*)+)/g) {
 die "$0: invalid rsync-command syntax or options\n" if $in_options;
 
 @args = ( '.' ) if !@args;
-
-if ($write_log) {
-  my ($mm,$hh) = (localtime)[1,2];
-  my $host = $ENV{SSH_CONNECTION} || 'unknown';
-  $host =~ s/ .*//; # Keep only the client's IP addr
-  $host =~ s/^::ffff://;
-  $host = gethostbyaddr(inet_aton($host),AF_INET) || $host;
-  printf LOG "%02d:%02d %-13s [%s]\n", $hh, $mm, $host, "@opts @args";
-  close LOG;
-}
 
 # Note: This assumes that the rsync protocol will not be maliciously hijacked.
 exec(RSYNC, @opts, @args) or die "exec(rsync @opts @args) failed: $? $!";

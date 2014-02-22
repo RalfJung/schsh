@@ -35,7 +35,7 @@ setup.fstab=schsh/{0}.fstab
 		# no spaces, schroot does not like them
 		print("# <file system> <mount point>   <type>  <options>       <dump>  <pass>", file=f)
 		# system folders
-		for folder in ("/lib", "/lib64", "/usr/bin", "/usr/lib", "/usr/lib64"):
+		for folder in ("/lib", "/lib64", "/usr/bin", "/usr/lib", "/usr/lib64", "/usr/share/", "/usr/local/bin"):
 			if os.path.exists(folder):
 				print("{0}\t{0}\tnone\trw,bind\t0\t0".format(folder), file=f)
 		# user folder
@@ -43,7 +43,7 @@ setup.fstab=schsh/{0}.fstab
 	
 	# setup the schroot directory
 	os.mkdir(chroot)
-	for folder in ["etc", "dev", "bin", "usr", "data"]:
+	for folder in ["etc", "dev", "data"]:
 		os.mkdir(os.path.join(chroot, folder))
 	
 	# setup /etc/passwd and /etc/group
