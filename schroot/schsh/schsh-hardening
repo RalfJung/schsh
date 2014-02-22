@@ -1,0 +1,12 @@
+# Describes how to re-mount some filesystems, if they happen to exist
+# Format: Mount-Point <TAB> remount-options
+/				bind,ro,nosuid,noexec
+/bin 			bind,ro,nosuid,nodev
+/lib	 		bind,ro,nosuid,nodev
+/lib64			bind,ro,nosuid,nodev
+/usr/bin 		bind,ro,nosuid,nodev
+/usr/lib		bind,ro,nosuid,nodev
+/usr/lib64		bind,ro,nosuid,nodev
+/usr/share		bind,ro,nosuid,nodev
+/usr/local/bin 	bind,ro,nosuid,nodev
+/data			bind,rw,nosuid,nodev,noexec

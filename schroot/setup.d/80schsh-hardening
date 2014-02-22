@@ -1,0 +1,35 @@
+#!/bin/sh
+
+. "$SETUP_DATA_DIR/common-data"
+. "$SETUP_DATA_DIR/common-functions"
+. "$SETUP_DATA_DIR/common-config"
+
+SETUP_HARDENING="$CHROOT_PROFILE_DIR/schsh-hardening"
+
+# Mount filesystems from fstab for all chroot types
+if [ "$STAGE" = "setup-start" ] || [ "$STAGE" = "setup-recover" ]; then
+	if [ "$CHROOT_PROFILE" = "schsh" ]; then
+		if [ -f "$SETUP_HARDENING" ]; then
+			while read REMOUNT; do
+				if echo "$REMOUNT" | egrep -q '^(#|$)' ; then
+					continue
+				fi
+				REMOUNT=$(echo "$REMOUNT" | tr ' ' '\t' | tr -s '\t') # replace spaces by tabs, and squeeze tabs together
+				MOUNTPOINT=${CHROOT_PATH}/$(echo "$REMOUNT" | cut -f 1)
+				MOUNTPOINT=$(readlink -m "$MOUNTPOINT") # canonicalize the path
+				MOUNTOPT=$(echo "$REMOUNT" | cut -f 2)
+				if cat /proc/mounts | grep " $MOUNTPOINT " > /dev/null; then # somehow "mountpoint" does not detect bind points...
+					info "Re-mounting $MOUNTPOINT with $MOUNTOPT"
+					mount -o remount,"$MOUNTOPT" "$MOUNTPOINT"
+				else
+					info "No such mountpoint: $MOUNTPOINT"
+				fi
+				
+			done < "$SETUP_HARDENING"
+		else
+			fatal "schsh-hardening file '$SETUP_HARDENING' does not exist"
+		fi
+	else
+		info "Not a schsh chroot, not doing anything"
+	fi
+fi
