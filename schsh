@@ -68,7 +68,7 @@ elif len(sys.argv) == 3 and sys.argv[1] == "-c":
 	# check if the command is allowed, and add path
 	run = shlex.split(sys.argv[2])
 	if commandAllowed(run, sys.argv[2]): # this may change run, but that's okay
-		log("Running '"+str(run)+"'")
+		log("Running "+str(run))
 	else:
 		print("You are not allowed to run this command.")
 		logquit("Attempt to run invalid command '"+sys.argv[2]+"'")
