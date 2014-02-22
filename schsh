@@ -1,27 +1,27 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # Configuration
 shell = None # set to "/bin/bash" or similar to allow shell access
 
-def allowSCP(run):
+def allowSCP(run, runstr):
 	if len(run) != 3: return False
 	if run[0] != "scp": return False
 	if run[1] not in ("-f", "-t"): return False
 	if run[2].startswith('-'): return False
+	run[0] = "/usr/bin/scp"
 	return True
 
-def allowRSync(run):
+def allowRSync(run, runstr):
 	if len(run) < 3: return False
 	if run[0] != "rsync": return False
 	if run[1] != "--server": return False
+	run[0] = "/usr/bin/rsync"
 	return True
 
-def allowSFTP(run):
-	if len(run) != 1: return False
-	return run[0] == "/usr/lib/openssh/sftp-server"
+def allowSFTP(run, runstr):
+	return runstr == "/usr/lib/openssh/sftp-server"
 
 allowCommands = [allowSCP, allowRSync, allowSFTP]
-commandPaths = ["/usr/bin", "/bin"]
 
 # END of Configuration
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
@@ -45,38 +45,27 @@ def logquit(msg):
 	log(msg, logging.ERROR)
 	sys.exit(1)
 
-def commandAllowed(run):
+def commandAllowed(run, runstr):
 	for allowed in allowCommands:
-		if allowed(run):
+		if allowed(run, runstr):
 			return True
 	return False
-
-def addPath(prog):
-	if prog.startswith("/"):
-		return prog
-	# look for it in the paths
-	for path in commandPaths:
-		fullprog = os.path.join(path, prog)
-		if os.path.exists(fullprog):
-			return fullprog
-	return None
 
 # parse arguments
 run = []
 if len(sys.argv) == 1:
 	if shell is None:
-		print "No shell for you!"
+		print("No shell for you!")
 		logquit("Shell access not allowed")
 	else:
 		run = [shell]
 elif len(sys.argv) == 3 and sys.argv[1] == "-c":
 	# check if the command is allowed, and add path
 	run = shlex.split(sys.argv[2])
-	if commandAllowed(run):
-		run[0] = addPath(run[0])
+	if commandAllowed(run, sys.argv[2]): # this may change run, but that's okay
 		log("Running '"+str(run)+"'")
 	else:
-		print "You are not allowed to run this command."
+		print("You are not allowed to run this command.")
 		logquit("Attempt to run invalid command '"+sys.argv[2]+"'")
 else:
 	logquit("Invalid arguments for schsh: "+str(sys.argv))

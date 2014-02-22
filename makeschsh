@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # Configuration
 schsh = "/usr/local/bin/schsh"
@@ -12,7 +12,7 @@ chroots = "/var/lib/schsh"
 import os, sys, subprocess, pwd, grp
 
 if os.getuid() != 0:
-	print "Run this a root, please."
+	print("Run this a root, please.")
 	sys.exit(1)
 
 
@@ -24,22 +24,22 @@ def setup(name):
 	
 	# schroot configuration
 	with open("/etc/schroot/chroot.d/schsh-"+name, "w") as f:
-		print >>f, """[schsh-{0}]
+		print("""[schsh-{0}]
 type=directory
 directory={1}
 users={0}
 profile=schsh
 setup.fstab=schsh/{0}.fstab
-""".format(name, chroot)
+""".format(name, chroot), file=f)
 	with open("/etc/schroot/schsh/"+name+".fstab", "w") as f:
 		# no spaces, schroot does not like them
-		print >>f, "# <file system> <mount point>   <type>  <options>       <dump>  <pass>"
+		print("# <file system> <mount point>   <type>  <options>       <dump>  <pass>", file=f)
 		# system folders
-		for folder in ("/bin", "/lib", "/lib64", "/usr/bin", "/usr/lib", "/usr/lib64"):
+		for folder in ("/lib", "/lib64", "/usr/bin", "/usr/lib", "/usr/lib64"):
 			if os.path.exists(folder):
-				print >>f, "{0}\t{0}\tnone\trw,bind\t0\t0".format(folder)
+				print("{0}\t{0}\tnone\trw,bind\t0\t0".format(folder), file=f)
 		# user folder
-		print >>f, "/home/{0}/data\t/data\tnone\trw,bind\t0\t0".format(name)
+		print("/home/{0}/data\t/data\tnone\trw,bind\t0\t0".format(name), file=f)
 	
 	# setup the schroot directory
 	os.mkdir(chroot)
@@ -48,16 +48,16 @@ setup.fstab=schsh/{0}.fstab
 	
 	# setup /etc/passwd and /etc/group
 	with open(os.path.join(chroot, "etc", "passwd"), "w") as f:
-		print >>f, "root:x:0:0:root:/root:/bin/bash"
-		print >>f, "{0}:x:{1}:{2}:,,,:/data:/bin/false".format(name, userpw.pw_uid, userpw.pw_gid)
+		print("root:x:0:0:root:/root:/bin/bash", file=f)
+		print("{0}:x:{1}:{2}:,,,:/data:/bin/false".format(name, userpw.pw_uid, userpw.pw_gid), file=f)
 	with open(os.path.join(chroot, "etc", "group"), "w") as f:
-		print >>f, "root:x:0:"
+		print("root:x:0:", file=f)
 		usergrp = grp.getgrgid(userpw.pw_gid)
-		print >>f, "{0}:x:{1}:".format(usergrp.gr_name, usergrp.gr_gid)
+		print("{0}:x:{1}:".format(usergrp.gr_name, usergrp.gr_gid), file=f)
 		if group:
 			groupgrp = grp.getgrnam(group)
 			assert usergrp.gr_gid != groupgrp.gr_gid
-			print >>f, "{0}:x:{1}:{2}".format(groupgrp.gr_name, groupgrp.gr_gid, name)
+			print("{0}:x:{1}:{2}".format(groupgrp.gr_name, groupgrp.gr_gid, name), file=f)
 	
 	# user configuration
 	if userpw.pw_shell != schsh:
@@ -68,8 +68,8 @@ setup.fstab=schsh/{0}.fstab
 	# done!
 
 if len(sys.argv) <= 1:
-	print "Usage: %s <usernames>" % sys.argv[0]
+	print("Usage: %s <usernames>" % sys.argv[0])
 else:
 	for name in sys.argv[1:]:
-		print "Setting up",name
+		print("Setting up",name)
 		setup(name)
