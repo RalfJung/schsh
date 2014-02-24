@@ -4,7 +4,7 @@ schsh
 Introduction
 ------------
 
-This is schsh, a schroot-based shell. 
+This is [schsh][0], a schroot-based shell. 
 
 The purpose is simple: I want to provide users with scp, sftp and rsync access
 to my server, such that they can only operate in a certain subdirectory.
@@ -28,6 +28,7 @@ chroots automatically. For additional hardening, these bind-mounts are
 configured to be read-only and no-setuid, while the only user-writeable folder
 is no-exec.
 
+[0]: http://www.ralfj.de/projects/schsh/
 
 Setup
 -----
@@ -80,3 +81,20 @@ Configuration
 There is not much to configure at the moment. However, there are some
 global variables at the top of both ```schsh``` and ```makeschsh``` to
 change the base paths, and to tell which commands are allowed.
+
+Source, License
+---------------
+
+You can find the sources in the [git repository][GIT]. They are provided under the [GPLv3][GPL3].
+In addition, all files except for ```schsh-rrsync``` are provided under the [GPLv2][GPL2] or
+(at your option) any later vrsion of the GPL.
+
+[GIT]: http://www.ralfj.de/git/schsh.git
+[GPL3]: https://www.gnu.org/licenses/gpl.html
+[GPL2]: https://www.gnu.org/licenses/old-licenses/gpl-2.0.html
+
+Contact
+-------
+
+If you found a bug, or want to leave a comment, please send me a mail:
+```post AT ralfj DOT de```.
