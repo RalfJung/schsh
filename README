@@ -4,9 +4,9 @@ schsh
 Introduction
 ------------
 
-This is [schsh][SCHSH], a schroot-based shell.
+Welcome to [schsh][SCHSH], a schroot-based shell.
 
-The purpose is simple: I want to provide users with scp, sftp and rsync access
+Its purpose is simple: I want to provide users with scp, sftp and rsync access
 to my server, such that they can only operate in a certain subdirectory.
 There are plenty of solutions for this problem out there, and all have one
 drawback in common:
@@ -43,8 +43,8 @@ Before you create any users, make sure the directory ```/var/lib/schsh``` and a
 group called ```schsh``` exist.
 
 You should also set up SSH to disallow port forwarding for users controlled by
-schsh. See ```sshd_config``` in this folder for an appropriate snippet of
-OpenSSH configuration.
+schsh. See ```sshd_config``` in the source folder for an appropriate snippet
+of OpenSSH configuration.
 
 Before you can set up schsh for a user, you need to create it first:
 
@@ -61,14 +61,14 @@ This does the following:
   subfolders as well as ```/etc/passwd``` and ```/etc/group``` containing
   only root, this user and the ```schsh``` group
 * Add the user to the ```schsh``` group
-* Add a schroot called schsh-sandboxed for the given folder, and an fstab file
-  in ```/etc/schroot/schsh``` used by this schroot
+* Set up a schroot called ```schsh-sandboxed``` for the given folder, and an
+  fstab file in ```/etc/schroot/schsh``` used by this schroot
 
 Now if the user logs in via SSH, ```/usr/local/bin/schsh``` will be executed,
 and it will lock the user into the schroot ```schsh-sandboxed```. It will
 only see some system folders and a folder called ```/data``` mapped to
-```/home/sandboxed/data```. If you want to give the user access to more folders,
-or another folder, simply edit ```/etc/schroot/schsh/sandboxed.fstab```.
+```/home/sandboxed/data```. If you want to give the user access to more
+folders, or another folder, simply edit ```/etc/schroot/schsh/sandboxed.fstab```.
 The only part of schsh writing any files is ```makeschsh```, so you can change
 the users' schroot configurations at your will.
 
@@ -85,9 +85,10 @@ change the base paths, and to tell which commands are allowed.
 Source, License
 ---------------
 
-You can find the sources in the [git repository][GIT]. They are provided under the [GPLv3][GPL3].
-In addition, all files except for ```schsh-rrsync``` are provided under the [GPLv2][GPL2] or
-(at your option) any later vrsion of the GPL.
+You can find the sources in the [git repository][GIT]. They are provided under
+the [GPLv3][GPL3]. In addition, all files except for ```schsh-rrsync``` are
+provided under the [GPLv2][GPL2] or (at your option) any later vrsion of the
+GPL.
 
 [GIT]: http://www.ralfj.de/git/schsh.git
 [GPL3]: https://www.gnu.org/licenses/gpl.html
