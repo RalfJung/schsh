@@ -4,7 +4,7 @@ schsh
 Introduction
 ------------
 
-This is [schsh][0], a schroot-based shell. 
+This is [schsh][SCHSH], a schroot-based shell.
 
 The purpose is simple: I want to provide users with scp, sftp and rsync access
 to my server, such that they can only operate in a certain subdirectory.
@@ -28,14 +28,14 @@ chroots automatically. For additional hardening, these bind-mounts are
 configured to be read-only and no-setuid, while the only user-writeable folder
 is no-exec.
 
-[0]: http://www.ralfj.de/projects/schsh/
+[SCHSH]: http://www.ralfj.de/projects/schsh/
 
 Setup
 -----
 
 Before you start, make sure you have the dependencies installed:
-schsh needs [Python 3][0] (I tested it with version 3.2) and [schroot][1]
-(version 1.6 or newer).
+schsh needs [Python 3][PYTHON] (I tested it with version 3.2) and
+[schroot][SCHROOT] (version 1.6 or newer).
 
 Installation is simple: Just run ```make install```. That will copy some files
 to ```/usr/local/bin```, and some configuration to ```/etc/schroot/```.
@@ -72,8 +72,8 @@ or another folder, simply edit ```/etc/schroot/schsh/sandboxed.fstab```.
 The only part of schsh writing any files is ```makeschsh```, so you can change
 the users' schroot configurations at your will.
 
-[0]: http://www.python.org
-[1]: http://packages.qa.debian.org/s/schroot.html
+[PYTHON]: http://www.python.org
+[SCHROOT]: http://packages.qa.debian.org/s/schroot.html
 
 Configuration
 -------------
