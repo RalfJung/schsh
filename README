@@ -70,7 +70,7 @@ The only part of schsh writing any files is ```makeschsh```, so you can change
 the users' schroot configurations at your will.
 
 [PYTHON]: http://www.python.org
-[SCHROOT]: http://packages.qa.debian.org/s/schroot.html
+[SCHROOT]: https://wiki.debian.org/Schroot
 
 Configuration
 -------------
