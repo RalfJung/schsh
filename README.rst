@@ -98,5 +98,5 @@ Contact
 -------
 
 If you found a bug, or want to leave a comment, please
-`send me a mail <post AT ralfj DOT de>`_.
+`send me a mail <mailto:post AT ralfj DOT de>`_.
 
