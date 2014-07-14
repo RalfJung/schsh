@@ -28,7 +28,7 @@ chroots automatically. For additional hardening, these bind-mounts are
 configured to be read-only and no-setuid, while the only user-writeable folder
 is no-exec.
 
-.. _schsh: http://www.ralfj.de/projects/schsh/
+.. _schsh: https://www.ralfj.de/projects/schsh
 
 Setup
 -----
@@ -48,11 +48,11 @@ of OpenSSH configuration.
 
 Before you can set up schsh for a user, you need to create it first::
 
-    adduser sandboxed --disabled-password
+  adduser sandboxed --disabled-password
 
 Any existing user can be "sandboxed" by running::
 
-    makeschsh sandboxed
+  makeschsh sandboxed
 
 This does the following:
 
@@ -99,4 +99,3 @@ Contact
 
 If you found a bug, or want to leave a comment, please
 `send me a mail <mailto:post-AT-ralfj-DOT-de>`_.
-
