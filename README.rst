@@ -85,12 +85,12 @@ change the base paths, and to tell which commands are allowed.
 Source, License
 ---------------
 
-You can find the sources in the `git repository`_. They are provided under
-the GPLv3_. In addition, all files except for ``schsh-rrsync`` are
-provided under the GPLv2_ or (at your option) any later version of the
-GPL.
+You can find the sources in the `git repository`_ and `on GitHub`_. They are 
+provided under the GPLv3_. In addition, all files except for ``schsh-rrsync`` 
+are provided under the GPLv2_ or (at your option) any later version of the GPL.
 
 .. _git repository: http://www.ralfj.de/git/schsh.git
+.. _on GitHub: https://github.com/RalfJung/schsh
 .. _GPLv2: https://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 .. _GPLv3: https://www.gnu.org/licenses/gpl.html
 
