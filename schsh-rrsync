@@ -3,7 +3,31 @@
 # Purpose: Restricts rsync to subdirectory declared in .ssh/authorized_keys
 # Author: Joe Smith <js-cgi@inwap.com> 30-Sep-2004
 # Modified by: Wayne Davison <wayned@samba.org>
+
 # Modified by: Ralf Jung <post@ralfj.de>
+# This file is taken from the Debian rsync package, where it resides in
+# </usr/share/doc/rsync/scripts/rrsync.gz>. According to the Debian package
+# copyright information, it is available under GPL-3. Quoting from that information:
+# > COPYRIGHT
+# > ---------
+# > 
+# > Copyright (C) 1996-2011 by Andrew Tridgell, Wayne Davison, and others.
+# > 
+# > Rsync was originally written by Andrew Tridgell and is currently
+# > maintained by Wayne Davison.  It has been improved by many developers
+# > from around the world.
+# > 
+# > Rsync may be used, modified and redistributed only under the terms of
+# > the GNU General Public License, found in the file:
+# > 
+# >   /usr/share/common-licenses/GPL-3
+# > 
+# > on Debian systems, or at 
+# > 
+# >   http://www.fsf.org/licensing/licenses/gpl.html
+# You can also find the license text of GPL-3 in the COPYING file that
+# comes with schsh.
+
 use strict;
 
 # use Socket;
