@@ -87,7 +87,8 @@ Source, License
 
 You can find the sources in the `git repository`_ and `on GitHub`_. They are 
 provided under the GPLv3_. In addition, all files except for ``schsh-rrsync`` 
-are provided under the GPLv2_ or (at your option) any later version of the GPL.
+are provided under the GPLv2_ or (at your option) any later version of the GPL. 
+See the file ``LICENSE-GPL3`` for more details.
 
 .. _git repository: http://www.ralfj.de/git/schsh.git
 .. _on GitHub: https://github.com/RalfJung/schsh
