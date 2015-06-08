@@ -25,7 +25,7 @@
 # > on Debian systems, or at 
 # > 
 # >   http://www.fsf.org/licensing/licenses/gpl.html
-# You can also find the license text of GPL-3 in the COPYING file that
+# You can also find the license text of GPL-3 in the LICENSE-GPL3 file that
 # comes with schsh.
 
 use strict;
