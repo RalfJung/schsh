@@ -77,7 +77,7 @@ change the base paths, and to tell which commands are allowed.
 ## Source, License
 
 You can find the sources in the [git 
-repository](http://www.ralfj.de/git/schsh.git) (also available [on 
+repository](https://git.ralfj.de/schsh.git) (also available [on
 GitHub](https://github.com/RalfJung/schsh)). They are provided under the 
 [GPLv3](https://www.gnu.org/licenses/gpl.html). In addition, all files except 
 for `schsh-rrsync` are provided under the 
