@@ -63,7 +63,7 @@ setup.fstab=schsh/{0}.fstab
 		# Make sure ~/data (part of the fstab above) exists.
 		if not os.path.exists(data):
 			os.mkdir(data)
-		shutil.chown(data, user, user)
+		shutil.chown(data, name, name)
 		os.chmod(data, 0o640)
 
 	# user configuration
