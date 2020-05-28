@@ -9,7 +9,7 @@ chroots = "/var/lib/schsh"
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # DO NOT TOUCH ANYTHING BELOW THIS LINE
 
-import os, sys, subprocess, pwd, grp
+import os, sys, subprocess, pwd, grp, shutil
 
 if os.getuid() != 0:
 	print("Run this a root, please.")
@@ -21,6 +21,7 @@ def setup(name):
 	if os.path.exists(chroot):
 		raise Exception(chroot+" already exists, please remove it first")
 	userpw = pwd.getpwnam(name)
+	data = "/home/{0}/data".format(name)
 	
 	# schroot configuration
 	with open("/etc/schroot/chroot.d/schsh-"+name, "w") as f:
@@ -39,7 +40,7 @@ setup.fstab=schsh/{0}.fstab
 			if os.path.exists(folder):
 				print("{0}\t{0}\tnone\trw,bind\t0\t0".format(folder), file=f)
 		# user folder
-		print("/home/{0}/data\t/data\tnone\trw,bind\t0\t0".format(name), file=f)
+		print("{0}\t/data\tnone\trw,bind\t0\t0".format(data), file=f)
 	
 	# setup the schroot directory
 	os.mkdir(chroot)
@@ -58,7 +59,13 @@ setup.fstab=schsh/{0}.fstab
 			groupgrp = grp.getgrnam(group)
 			assert usergrp.gr_gid != groupgrp.gr_gid
 			print("{0}:x:{1}:{2}".format(groupgrp.gr_name, groupgrp.gr_gid, name), file=f)
-	
+
+		# Make sure ~/data (part of the fstab above) exists.
+		if not os.path.exists(data):
+			os.mkdir(data)
+		shutil.chown(data, user, user)
+		os.chmod(data, 0o640)
+
 	# user configuration
 	if userpw.pw_shell != schsh:
 		subprocess.check_output(["usermod", "--shell", schsh, name])
